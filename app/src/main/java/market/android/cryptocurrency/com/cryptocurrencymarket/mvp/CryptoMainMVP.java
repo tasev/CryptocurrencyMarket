@@ -13,11 +13,14 @@ public interface CryptoMainMVP {
 
     interface View extends BaseMVPView {
 
+        void updateFiteredAdapterItems(List<CryptoData> filteredCryptoDataList);
     }
 
     interface Presenter {
 
         void getCryptoDatas(String convertVal, int limit, Callback<List<CryptoData>> callback);
+
+        void filter(String text, List<CryptoData> cryptoDataList);
 
     }
 }

@@ -10,7 +10,7 @@ import android.text.util.Linkify;
 import android.widget.TextView;
 
 /**
- * Created by Tasev on 5/19/2017.
+ * Created by tasev on 12/8/17.
  */
 
 public class UtilUI {

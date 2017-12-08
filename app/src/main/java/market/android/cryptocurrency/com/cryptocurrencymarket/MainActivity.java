@@ -1,9 +1,13 @@
 package market.android.cryptocurrency.com.cryptocurrencymarket;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -27,7 +31,7 @@ import market.android.cryptocurrency.com.cryptocurrencymarket.mvp.model.CryptoMa
 import market.android.cryptocurrency.com.cryptocurrencymarket.mvp.presenters.CryptoMainPresenter;
 import market.android.cryptocurrency.com.cryptocurrencymarket.utils.UtilApiConstants;
 
-public class MainActivity extends BaseActivity implements CryptoAdapterInteractionsListener, GetCryptoDatasListener, CryptoMainMVP.View {
+public class MainActivity extends BaseActivity implements CryptoAdapterInteractionsListener, GetCryptoDatasListener, CryptoMainMVP.View, SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static String TAG = "MainActivity";
     private List<CryptoData> cryptoDataList = new ArrayList<>();
@@ -39,10 +43,14 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
+    @BindView(R.id.swiperefresh)
+    SwipeRefreshLayout swipeRefresh;
+
     //MVP
     CryptoMainPresenter cryptoMainPresenter;
 
     String currentconvertVal = UtilApiConstants.USD;
+    int currentconvertLimit = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +59,7 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
         initialiseActivity();
         initialiseAdapter();
         initialiseRecyclerView();
-        getCryptoDatasFromApi(100);
+        getCryptoDatasFromApi(true);
     }
 
     @Override
@@ -64,6 +72,7 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
         if (!isVisible)
             return;
         hideProgress();
+        swipeRefresh.setRefreshing(false);
         prepareCryptoDataData(getCountriesResponse);
     }
 
@@ -72,6 +81,7 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
         if (!isVisible)
             return;
         hideProgress();
+        swipeRefresh.setRefreshing(false);
         Log.d(TAG, "getCryptoDatasUnsuccessful");
     }
 
@@ -79,6 +89,20 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+
+        SearchManager searchManager = (SearchManager) MainActivity.this.getSystemService(Context.SEARCH_SERVICE);
+
+        SearchView searchView = null;
+        if (searchItem != null) {
+            searchView = (SearchView) searchItem.getActionView();
+        }
+        if (searchView != null) {
+            searchView.setSearchableInfo(searchManager != null ? searchManager.getSearchableInfo(MainActivity.this.getComponentName()) : null);
+            searchView.setOnQueryTextListener(this);
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -87,23 +111,45 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.nav_usd:
-                currentconvertVal =UtilApiConstants.USD;
-                getCryptoDatasFromApi(100);
+                currentconvertVal = UtilApiConstants.USD;
+                getCryptoDatasFromApi(true);
                 return true;
             case R.id.nav_eur:
-                currentconvertVal =UtilApiConstants.EUR;
-                getCryptoDatasFromApi(100);
+                currentconvertVal = UtilApiConstants.EUR;
+                getCryptoDatasFromApi(true);
                 return true;
             case R.id.nav_cud:
-                currentconvertVal =UtilApiConstants.CNY;
-                getCryptoDatasFromApi(100);
+                currentconvertVal = UtilApiConstants.CNY;
+                getCryptoDatasFromApi(true);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        cryptoMainPresenter.filter(newText, cryptoDataList);
+        return false;
+    }
+
+    @Override
+    public void onRefresh() {
+        getCryptoDatasFromApi(false);
+    }
+
+    @Override
+    public void updateFiteredAdapterItems(List<CryptoData> filteredCryptoDataList) {
+        mAdapter.changeList(filteredCryptoDataList);
+    }
+
     private void prepareCryptoDataData(List<CryptoData> getCountriesResponse) {
+        cryptoDataList = getCountriesResponse;
         mAdapter.currentconvertVal = currentconvertVal;
         mAdapter.changeList(getCountriesResponse);
     }
@@ -112,9 +158,10 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
         cryptoMainPresenter = new CryptoMainPresenter(CryptoMainDataManager.getInstance(this));
     }
 
-    private void getCryptoDatasFromApi(int limit) {
-        showProgress();
-        cryptoMainPresenter.getCryptoDatas(currentconvertVal, limit, new GetCryptoDatasCallback(MainActivity.this));
+    private void getCryptoDatasFromApi(boolean showProgress) {
+        if (showProgress)
+            showProgress();
+        cryptoMainPresenter.getCryptoDatas(currentconvertVal, currentconvertLimit, new GetCryptoDatasCallback(MainActivity.this));
     }
 
     private void initialiseActivity() {
@@ -125,6 +172,7 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(null);
         }
+        swipeRefresh.setOnRefreshListener(this);
     }
 
     private void initialiseAdapter() {
@@ -138,4 +186,5 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(mAdapter);
     }
+
 }

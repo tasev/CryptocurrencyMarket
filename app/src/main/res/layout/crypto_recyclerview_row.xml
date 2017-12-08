@@ -19,11 +19,11 @@
         android:layout_alignParentTop="true"
         android:textColor="@color/text_name"
         android:textSize="@dimen/text_name_size"
-        android:textStyle="bold" />
+         />
 
     <TextView
         android:id="@+id/txtSymbol"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/txtName" />
 
@@ -34,5 +34,13 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:textColor="@color/price" />
+
+    <TextView
+        android:id="@+id/txtHVolume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/txtPrice" />
 
 </RelativeLayout>

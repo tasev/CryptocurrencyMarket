@@ -37,6 +37,9 @@ public class CryptoRecyclerAdapter extends RecyclerView.Adapter<CryptoRecyclerAd
         @BindView(R.id.txtPrice)
         TextView txtPrice;
 
+        @BindView(R.id.txtHVolume)
+        TextView txtHVolume;
+
         @BindView(R.id.mainLayout)
         RelativeLayout mainLayout;
 
@@ -67,8 +70,9 @@ public class CryptoRecyclerAdapter extends RecyclerView.Adapter<CryptoRecyclerAd
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final CryptoData cryptoData = cryptoDataList.get(position);
-        holder.txtName.setText(cryptoData.name);
+        holder.txtName.setText(String.valueOf(cryptoData.rank));
         holder.txtSymbol.setText(cryptoData.symbol);
+
         holder.mainLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,13 +83,16 @@ public class CryptoRecyclerAdapter extends RecyclerView.Adapter<CryptoRecyclerAd
         });
         if (currentconvertVal.equals(UtilApiConstants.CNY)) {
             holder.txtPrice.setText(String.valueOf(cryptoData.price_cny));
+            holder.txtHVolume.setText(String.valueOf(cryptoData.h_volume_cny));
             return;
         }
         if (currentconvertVal.equals(UtilApiConstants.EUR)) {
             holder.txtPrice.setText(String.valueOf(cryptoData.price_eur));
+            holder.txtHVolume.setText(String.valueOf(cryptoData.h_volume_eur));
             return;
         }
         holder.txtPrice.setText(String.valueOf(cryptoData.price_usd));
+        holder.txtHVolume.setText(String.valueOf(cryptoData.h_volume_usd));
 
     }
 

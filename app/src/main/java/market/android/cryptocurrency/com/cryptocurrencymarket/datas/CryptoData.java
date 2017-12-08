@@ -13,7 +13,7 @@ public class CryptoData implements Serializable {
     public String id;
     public String name;
     public String symbol;
-    public Integer rank;
+    public int rank;
     public double price_usd;
     public double price_btc;
     @SerializedName("24h_volume_usd")
