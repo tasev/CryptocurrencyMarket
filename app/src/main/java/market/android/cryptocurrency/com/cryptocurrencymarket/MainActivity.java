@@ -1,11 +1,11 @@
 package market.android.cryptocurrency.com.cryptocurrencymarket;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +13,16 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import market.android.cryptocurrency.com.cryptocurrencymarket.adapters.CryptoRecyclerAdapter;
+import market.android.cryptocurrency.com.cryptocurrencymarket.api.ApiRequestFunctions;
+import market.android.cryptocurrency.com.cryptocurrencymarket.api.cryptodatas.GetCryptoDatasCallback;
+import market.android.cryptocurrency.com.cryptocurrencymarket.api.cryptodatas.GetCryptoDatasListener;
+import market.android.cryptocurrency.com.cryptocurrencymarket.base.BaseActivity;
 import market.android.cryptocurrency.com.cryptocurrencymarket.datas.CryptoData;
 import market.android.cryptocurrency.com.cryptocurrencymarket.listeners.CryptoAdapterInteractionsListener;
 
-public class MainActivity extends AppCompatActivity implements CryptoAdapterInteractionsListener {
+public class MainActivity extends BaseActivity implements CryptoAdapterInteractionsListener, GetCryptoDatasListener {
 
+    private static String TAG = "MainActivity";
     private List<CryptoData> cryptoDataList = new ArrayList<>();
     private CryptoRecyclerAdapter mAdapter;
 
@@ -33,6 +38,12 @@ public class MainActivity extends AppCompatActivity implements CryptoAdapterInte
         initialiseActivity();
         initialiseAdapter();
         initialiseRecyclerView();
+        getCryptoDatasFromApi();
+    }
+
+    private void getCryptoDatasFromApi() {
+        ApiRequestFunctions.getCryptoDatas("cny", 100, new GetCryptoDatasCallback(MainActivity.this));
+
     }
 
     private void initialiseActivity() {
@@ -59,5 +70,23 @@ public class MainActivity extends AppCompatActivity implements CryptoAdapterInte
     @Override
     public void rowClicked(CryptoData cryptoData) {
 
+    }
+
+    @Override
+    public void getCryptoDatasSuccessful(List<CryptoData> getCountriesResponse) {
+        if (!isVisible)
+            return;
+        prepareCryptoDataData(getCountriesResponse);
+    }
+
+    @Override
+    public void getCryptoDatasUnsuccessful(Throwable t) {
+        if (!isVisible)
+            return;
+        Log.d(TAG, "getCryptoDatasUnsuccessful");
+    }
+
+    private void prepareCryptoDataData(List<CryptoData> getCountriesResponse) {
+        mAdapter.changeList(getCountriesResponse);
     }
 }
