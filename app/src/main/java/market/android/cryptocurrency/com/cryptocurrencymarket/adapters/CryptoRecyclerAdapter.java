@@ -15,6 +15,7 @@ import butterknife.ButterKnife;
 import market.android.cryptocurrency.com.cryptocurrencymarket.R;
 import market.android.cryptocurrency.com.cryptocurrencymarket.datas.CryptoData;
 import market.android.cryptocurrency.com.cryptocurrencymarket.listeners.CryptoAdapterInteractionsListener;
+import market.android.cryptocurrency.com.cryptocurrencymarket.utils.UtilApiConstants;
 
 /**
  * Created by tasev on 12/8/17.
@@ -24,6 +25,7 @@ public class CryptoRecyclerAdapter extends RecyclerView.Adapter<CryptoRecyclerAd
 
     private List<CryptoData> cryptoDataList;
     private WeakReference<CryptoAdapterInteractionsListener> cryptoAdapterInteractionsListener;
+    public String currentconvertVal = UtilApiConstants.USD;
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.txtName)
@@ -67,7 +69,6 @@ public class CryptoRecyclerAdapter extends RecyclerView.Adapter<CryptoRecyclerAd
         final CryptoData cryptoData = cryptoDataList.get(position);
         holder.txtName.setText(cryptoData.name);
         holder.txtSymbol.setText(cryptoData.symbol);
-        holder.txtPrice.setText(String.valueOf(cryptoData.price_usd));
         holder.mainLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,6 +77,16 @@ public class CryptoRecyclerAdapter extends RecyclerView.Adapter<CryptoRecyclerAd
                 intListener.rowClicked(cryptoData);
             }
         });
+        if (currentconvertVal.equals(UtilApiConstants.CNY)) {
+            holder.txtPrice.setText(String.valueOf(cryptoData.price_cny));
+            return;
+        }
+        if (currentconvertVal.equals(UtilApiConstants.EUR)) {
+            holder.txtPrice.setText(String.valueOf(cryptoData.price_eur));
+            return;
+        }
+        holder.txtPrice.setText(String.valueOf(cryptoData.price_usd));
+
     }
 
     @Override

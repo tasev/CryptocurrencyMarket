@@ -3,5 +3,8 @@
 
     <!-- API -->
     <string name="error_message">Something went wrong…</string>
+    <string name="title_cud">CUD</string>
+    <string name="title_usd">USD</string>
+    <string name="title_eur">EUR</string>
 
 </resources>
