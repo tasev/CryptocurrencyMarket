@@ -16,6 +16,7 @@ import market.android.cryptocurrency.com.cryptocurrencymarket.R;
 import market.android.cryptocurrency.com.cryptocurrencymarket.datas.CryptoData;
 import market.android.cryptocurrency.com.cryptocurrencymarket.listeners.CryptoAdapterInteractionsListener;
 import market.android.cryptocurrency.com.cryptocurrencymarket.utils.UtilApiConstants;
+import market.android.cryptocurrency.com.cryptocurrencymarket.utils.UtilCryptoData;
 
 /**
  * Created by tasev on 12/8/17.
@@ -28,8 +29,8 @@ public class CryptoRecyclerAdapter extends RecyclerView.Adapter<CryptoRecyclerAd
     public String currentconvertVal = UtilApiConstants.USD;
 
     class MyViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.txtName)
-        TextView txtName;
+        @BindView(R.id.txtRank)
+        TextView txtRank;
 
         @BindView(R.id.txtSymbol)
         TextView txtSymbol;
@@ -70,7 +71,7 @@ public class CryptoRecyclerAdapter extends RecyclerView.Adapter<CryptoRecyclerAd
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final CryptoData cryptoData = cryptoDataList.get(position);
-        holder.txtName.setText(String.valueOf(cryptoData.rank));
+        holder.txtRank.setText(String.valueOf(cryptoData.rank));
         holder.txtSymbol.setText(cryptoData.symbol);
 
         holder.mainLayout.setOnClickListener(new View.OnClickListener() {
@@ -81,18 +82,8 @@ public class CryptoRecyclerAdapter extends RecyclerView.Adapter<CryptoRecyclerAd
                 intListener.rowClicked(cryptoData);
             }
         });
-        if (currentconvertVal.equals(UtilApiConstants.CNY)) {
-            holder.txtPrice.setText(String.valueOf(cryptoData.price_cny));
-            holder.txtHVolume.setText(String.valueOf(cryptoData.h_volume_cny));
-            return;
-        }
-        if (currentconvertVal.equals(UtilApiConstants.EUR)) {
-            holder.txtPrice.setText(String.valueOf(cryptoData.price_eur));
-            holder.txtHVolume.setText(String.valueOf(cryptoData.h_volume_eur));
-            return;
-        }
-        holder.txtPrice.setText(String.valueOf(cryptoData.price_usd));
-        holder.txtHVolume.setText(String.valueOf(cryptoData.h_volume_usd));
+        holder.txtPrice.setText(String.valueOf(UtilCryptoData.getPriceInVal(cryptoData, currentconvertVal)));
+        holder.txtHVolume.setText(String.valueOf(UtilCryptoData.getHVolumeInVal(cryptoData, currentconvertVal)));
 
     }
 

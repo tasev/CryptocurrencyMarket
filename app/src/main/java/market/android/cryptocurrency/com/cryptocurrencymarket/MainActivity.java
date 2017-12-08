@@ -2,6 +2,7 @@ package market.android.cryptocurrency.com.cryptocurrencymarket;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
@@ -25,6 +26,7 @@ import market.android.cryptocurrency.com.cryptocurrencymarket.api.cryptodatas.Ge
 import market.android.cryptocurrency.com.cryptocurrencymarket.api.cryptodatas.GetCryptoDatasListener;
 import market.android.cryptocurrency.com.cryptocurrencymarket.base.BaseActivity;
 import market.android.cryptocurrency.com.cryptocurrencymarket.datas.CryptoData;
+import market.android.cryptocurrency.com.cryptocurrencymarket.details.CryptoCurrencyDetails;
 import market.android.cryptocurrency.com.cryptocurrencymarket.listeners.CryptoAdapterInteractionsListener;
 import market.android.cryptocurrency.com.cryptocurrencymarket.mvp.CryptoMainMVP;
 import market.android.cryptocurrency.com.cryptocurrencymarket.mvp.model.CryptoMainDataManager;
@@ -64,16 +66,16 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
 
     @Override
     public void rowClicked(CryptoData cryptoData) {
-        Toast.makeText(this, "" + cryptoData.name, Toast.LENGTH_SHORT).show();
+        cryptoMainPresenter.rowCryptoDataClicked(cryptoData);
     }
 
     @Override
-    public void getCryptoDatasSuccessful(List<CryptoData> getCountriesResponse) {
+    public void getCryptoDatasSuccessful(List<CryptoData> getCryptoDatasResponse) {
         if (!isVisible)
             return;
         hideProgress();
         swipeRefresh.setRefreshing(false);
-        prepareCryptoDataData(getCountriesResponse);
+        prepareCryptoDataData(getCryptoDatasResponse);
     }
 
     @Override
@@ -146,6 +148,11 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
     @Override
     public void updateFiteredAdapterItems(List<CryptoData> filteredCryptoDataList) {
         mAdapter.changeList(filteredCryptoDataList);
+    }
+
+    @Override
+    public void openCryptoDataDetails(CryptoData cryptoData) {
+        startActivity(new Intent(MainActivity.this, CryptoCurrencyDetails.class).putExtra(UtilApiConstants.CRYPTO_DATA_EXTRA_ID, cryptoData.id).putExtra(UtilApiConstants.CRYPTO_DATA_EXTRA_VAL, currentconvertVal));
     }
 
     private void prepareCryptoDataData(List<CryptoData> getCountriesResponse) {

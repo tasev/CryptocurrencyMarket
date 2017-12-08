@@ -14,6 +14,8 @@ public interface CryptoMainMVP {
     interface View extends BaseMVPView {
 
         void updateFiteredAdapterItems(List<CryptoData> filteredCryptoDataList);
+
+        void openCryptoDataDetails(CryptoData cryptoData);
     }
 
     interface Presenter {
@@ -22,5 +24,6 @@ public interface CryptoMainMVP {
 
         void filter(String text, List<CryptoData> cryptoDataList);
 
+        void rowCryptoDataClicked(CryptoData cryptoData);
     }
 }

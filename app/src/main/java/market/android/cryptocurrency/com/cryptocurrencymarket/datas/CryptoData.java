@@ -18,7 +18,7 @@ public class CryptoData implements Serializable {
     public double price_btc;
     @SerializedName("24h_volume_usd")
     public double h_volume_usd;
-    public String market_cap_usd;
+    public double market_cap_usd;
     public double available_supply;
     public double total_supply;
     public double max_supply;
@@ -31,11 +31,11 @@ public class CryptoData implements Serializable {
     public double price_eur;
     @SerializedName("24h_volume_eur")
     public double h_volume_eur;
-    public String market_cap_eur;
+    public double market_cap_eur;
 
     //CNY
     public double price_cny;
     @SerializedName("24h_volume_cny")
     public double h_volume_cny;
-    public String market_cap_cny;
+    public double market_cap_cny;
 }

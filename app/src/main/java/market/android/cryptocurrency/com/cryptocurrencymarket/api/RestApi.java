@@ -37,4 +37,8 @@ public class RestApi {
     public Call<List<CryptoData>> getCryptoDatas(String convertVal, int limit) {
         return request().getCryptoDatas(convertVal, limit);
     }
+
+    public Call<List<CryptoData>> getCryptoCurrencyDetails(String cryptoId, String convertVal) {
+        return request().getCryptoCurrencyDetails(cryptoId, convertVal);
+    }
 }

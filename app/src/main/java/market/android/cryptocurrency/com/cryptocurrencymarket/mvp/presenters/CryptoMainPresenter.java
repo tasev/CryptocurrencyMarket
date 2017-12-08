@@ -42,4 +42,9 @@ public class CryptoMainPresenter extends BasePresenter<CryptoMainMVP.View> imple
         }
         mView.updateFiteredAdapterItems(temp);
     }
+
+    @Override
+    public void rowCryptoDataClicked(CryptoData cryptoData) {
+        mView.openCryptoDataDetails(cryptoData);
+    }
 }

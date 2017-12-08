@@ -22,4 +22,9 @@ public class ApiRequestFunctions {
         call.enqueue(callback);
     }
 
+    public static void getCryptoCurrencyDetails(String cryptoId, String convertVal, Callback<List<CryptoData>> callback) {
+        Call<List<CryptoData>> call = api.getCryptoCurrencyDetails(cryptoId, convertVal);
+        call.enqueue(callback);
+    }
+
 }

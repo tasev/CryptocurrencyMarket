@@ -12,7 +12,7 @@ import market.android.cryptocurrency.com.cryptocurrencymarket.datas.CryptoData;
 
 public interface GetCryptoDatasListener extends IBaseCallbackListener {
 
-    void getCryptoDatasSuccessful(List<CryptoData> getCountriesResponse);
+    void getCryptoDatasSuccessful(List<CryptoData> getCryptoDatasResponse);
 
     void getCryptoDatasUnsuccessful(Throwable t);
 }
