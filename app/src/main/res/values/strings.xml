@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">CryptocurrencyMarket</string>
+
+    <!-- API -->
+    <string name="error_message">Something went wrong…</string>
+
 </resources>

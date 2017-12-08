@@ -1,5 +1,6 @@
 package market.android.cryptocurrency.com.cryptocurrencymarket;
 
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,8 +20,11 @@ import market.android.cryptocurrency.com.cryptocurrencymarket.api.cryptodatas.Ge
 import market.android.cryptocurrency.com.cryptocurrencymarket.base.BaseActivity;
 import market.android.cryptocurrency.com.cryptocurrencymarket.datas.CryptoData;
 import market.android.cryptocurrency.com.cryptocurrencymarket.listeners.CryptoAdapterInteractionsListener;
+import market.android.cryptocurrency.com.cryptocurrencymarket.mvp.CryptoMainMVP;
+import market.android.cryptocurrency.com.cryptocurrencymarket.mvp.model.CryptoMainDataManager;
+import market.android.cryptocurrency.com.cryptocurrencymarket.mvp.presenters.CryptoMainPresenter;
 
-public class MainActivity extends BaseActivity implements CryptoAdapterInteractionsListener, GetCryptoDatasListener {
+public class MainActivity extends BaseActivity implements CryptoAdapterInteractionsListener, GetCryptoDatasListener, CryptoMainMVP.View {
 
     private static String TAG = "MainActivity";
     private List<CryptoData> cryptoDataList = new ArrayList<>();
@@ -32,22 +36,31 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
+    //MVP
+    CryptoMainPresenter cryptoMainPresenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initiateMVP();
         initialiseActivity();
         initialiseAdapter();
         initialiseRecyclerView();
         getCryptoDatasFromApi();
     }
 
-    private void getCryptoDatasFromApi() {
-        ApiRequestFunctions.getCryptoDatas("cny", 100, new GetCryptoDatasCallback(MainActivity.this));
+    private void initiateMVP() {
+        cryptoMainPresenter = new CryptoMainPresenter(CryptoMainDataManager.getInstance(this));
+    }
 
+    private void getCryptoDatasFromApi() {
+        showProgress();
+        cryptoMainPresenter.getCryptoDatas("cny", 100, new GetCryptoDatasCallback(MainActivity.this));
     }
 
     private void initialiseActivity() {
         setContentView(R.layout.activity_main);
+        cryptoMainPresenter.attachView(this);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
@@ -76,6 +89,7 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
     public void getCryptoDatasSuccessful(List<CryptoData> getCountriesResponse) {
         if (!isVisible)
             return;
+        hideProgress();
         prepareCryptoDataData(getCountriesResponse);
     }
 
@@ -83,6 +97,7 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
     public void getCryptoDatasUnsuccessful(Throwable t) {
         if (!isVisible)
             return;
+        hideProgress();
         Log.d(TAG, "getCryptoDatasUnsuccessful");
     }
 

@@ -4,16 +4,19 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
+import market.android.cryptocurrency.com.cryptocurrencymarket.R;
 import market.android.cryptocurrency.com.cryptocurrencymarket.api.ErrorResponse;
 import market.android.cryptocurrency.com.cryptocurrencymarket.api.base.IBaseCallbackListener;
+import market.android.cryptocurrency.com.cryptocurrencymarket.mvp.BaseMVPView;
+import market.android.cryptocurrency.com.cryptocurrencymarket.utils.ProgressDialogHandler;
+import market.android.cryptocurrency.com.cryptocurrencymarket.utils.UtilUI;
 
 /**
  * Created by tasev on 12/8/17.
  */
 
-public class BaseActivity extends AppCompatActivity implements IBaseCallbackListener {
+public class BaseActivity extends AppCompatActivity implements IBaseCallbackListener, BaseMVPView {
 
     protected boolean isVisible = false;
 
@@ -36,14 +39,37 @@ public class BaseActivity extends AppCompatActivity implements IBaseCallbackList
 
     @Override
     public void handleNetworkFailure(Throwable t) {
-        Toast.makeText(this, "Please check your network connection!", Toast.LENGTH_SHORT).show();
+        hideProgress();
     }
 
     @Override
     public void handleCommonError(ErrorResponse error) {
+        hideProgress();
         if (error != null) {
-            Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show();
+            showAlertDialogWithOneButton("", error.message, null);
+            return;
         }
+        showAlertDialogWithOneButton("", getString(R.string.error_message), null);
+    }
+
+    @Override
+    public void showProgress() {
+        showProgress(null);
+    }
+
+    @Override
+    public void showProgress(String title) {
+        ProgressDialogHandler.getInstance().showProgressDialog(title, this);
+    }
+
+    @Override
+    public void hideProgress() {
+        ProgressDialogHandler.getInstance().hideProgressDialog();
+    }
+
+    @Override
+    public void showAlertDialogWithOneButton(String title, String description, DialogInterface.OnClickListener onClickListener) {
+        UtilUI.showAlertDialogWithOneButton(this, title, description, onClickListener);
     }
 
 }
