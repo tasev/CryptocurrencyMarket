@@ -38,6 +38,7 @@ dependencies {
 
     //Butter Knife
     compile "com.jakewharton:butterknife:$butterknifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterknifeVersion"
 
     //Tests
     androidTestCompile 'junit:junit:4.12'

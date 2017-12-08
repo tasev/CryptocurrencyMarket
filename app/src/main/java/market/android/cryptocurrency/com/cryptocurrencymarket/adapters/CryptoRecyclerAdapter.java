@@ -1,17 +1,20 @@
-package market.android.cryptocurrency.com.cryptocurrencymarket.adapter;
+package market.android.cryptocurrency.com.cryptocurrencymarket.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import market.android.cryptocurrency.com.cryptocurrencymarket.R;
-import market.android.cryptocurrency.com.cryptocurrencymarket.data.CryptoData;
+import market.android.cryptocurrency.com.cryptocurrencymarket.datas.CryptoData;
+import market.android.cryptocurrency.com.cryptocurrencymarket.listeners.CryptoAdapterInteractionsListener;
 
 /**
  * Created by tasev on 12/8/17.
@@ -20,23 +23,31 @@ import market.android.cryptocurrency.com.cryptocurrencymarket.data.CryptoData;
 public class CryptoRecyclerAdapter extends RecyclerView.Adapter<CryptoRecyclerAdapter.MyViewHolder> {
 
     private List<CryptoData> cryptoDataList;
+    private WeakReference<CryptoAdapterInteractionsListener> cryptoAdapterInteractionsListener;
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.txtName)
-        public TextView txtName;
+        TextView txtName;
 
         @BindView(R.id.txtSymbol)
-        public TextView txtSymbol;
+        TextView txtSymbol;
 
         @BindView(R.id.txtPrice)
-        public TextView txtPrice;
+        TextView txtPrice;
 
-        public MyViewHolder(View view) {
+        @BindView(R.id.mainLayout)
+        RelativeLayout mainLayout;
+
+        MyViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
     }
 
+    public CryptoRecyclerAdapter(List<CryptoData> cryptoDataList, CryptoAdapterInteractionsListener cryptoAdapterInteractionsListener) {
+        this.cryptoDataList = cryptoDataList;
+        this.cryptoAdapterInteractionsListener = new WeakReference<>(cryptoAdapterInteractionsListener);
+    }
 
     public void changeList(List<CryptoData> cryptoDataList) {
         this.cryptoDataList = cryptoDataList;
@@ -57,6 +68,14 @@ public class CryptoRecyclerAdapter extends RecyclerView.Adapter<CryptoRecyclerAd
         holder.txtName.setText(cryptoData.name);
         holder.txtSymbol.setText(cryptoData.symbol);
         holder.txtPrice.setText(String.valueOf(cryptoData.price_usd));
+        holder.mainLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CryptoAdapterInteractionsListener intListener = cryptoAdapterInteractionsListener.get();
+                if (intListener == null) return;
+                intListener.rowClicked(cryptoData);
+            }
+        });
     }
 
     @Override

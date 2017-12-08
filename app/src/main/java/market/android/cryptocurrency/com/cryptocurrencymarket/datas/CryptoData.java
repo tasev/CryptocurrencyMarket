@@ -1,4 +1,4 @@
-package market.android.cryptocurrency.com.cryptocurrencymarket.data;
+package market.android.cryptocurrency.com.cryptocurrencymarket.datas;
 
 import com.google.gson.annotations.SerializedName;
 
