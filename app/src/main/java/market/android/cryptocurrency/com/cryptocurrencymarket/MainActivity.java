@@ -14,24 +14,25 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import market.android.cryptocurrency.com.cryptocurrencymarket.activities.ActivitySettings;
+import market.android.cryptocurrency.com.cryptocurrencymarket.activities.CryptoCurrencyDetails;
 import market.android.cryptocurrency.com.cryptocurrencymarket.adapters.CryptoRecyclerAdapter;
 import market.android.cryptocurrency.com.cryptocurrencymarket.api.cryptodatas.GetCryptoDatasCallback;
 import market.android.cryptocurrency.com.cryptocurrencymarket.api.cryptodatas.GetCryptoDatasListener;
 import market.android.cryptocurrency.com.cryptocurrencymarket.base.BaseActivity;
 import market.android.cryptocurrency.com.cryptocurrencymarket.datas.CryptoData;
-import market.android.cryptocurrency.com.cryptocurrencymarket.details.CryptoCurrencyDetails;
 import market.android.cryptocurrency.com.cryptocurrencymarket.listeners.CryptoAdapterInteractionsListener;
 import market.android.cryptocurrency.com.cryptocurrencymarket.mvp.CryptoMainMVP;
 import market.android.cryptocurrency.com.cryptocurrencymarket.mvp.model.CryptoMainDataManager;
 import market.android.cryptocurrency.com.cryptocurrencymarket.mvp.presenters.CryptoMainPresenter;
 import market.android.cryptocurrency.com.cryptocurrencymarket.utils.UtilApiConstants;
+import market.android.cryptocurrency.com.cryptocurrencymarket.utils.UtilSettings;
 
 public class MainActivity extends BaseActivity implements CryptoAdapterInteractionsListener, GetCryptoDatasListener, CryptoMainMVP.View, SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
 
@@ -51,9 +52,6 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
     //MVP
     CryptoMainPresenter cryptoMainPresenter;
 
-    String currentconvertVal = UtilApiConstants.USD;
-    int currentconvertLimit = 100;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +60,13 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
         initialiseAdapter();
         initialiseRecyclerView();
         getCryptoDatasFromApi(true);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideProgress();
+        cryptoMainPresenter.getCryptoDatasIfSettingsChanged(UtilSettings.getInstance().getCurrentconvertVal(), UtilSettings.getInstance().getCurrentconvertLimit(), new GetCryptoDatasCallback(MainActivity.this));
     }
 
     @Override
@@ -112,17 +117,8 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.nav_usd:
-                currentconvertVal = UtilApiConstants.USD;
-                getCryptoDatasFromApi(true);
-                return true;
-            case R.id.nav_eur:
-                currentconvertVal = UtilApiConstants.EUR;
-                getCryptoDatasFromApi(true);
-                return true;
-            case R.id.nav_cud:
-                currentconvertVal = UtilApiConstants.CNY;
-                getCryptoDatasFromApi(true);
+            case R.id.nav_settings:
+                openSettingsActivity();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -152,12 +148,16 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
 
     @Override
     public void openCryptoDataDetails(CryptoData cryptoData) {
-        startActivity(new Intent(MainActivity.this, CryptoCurrencyDetails.class).putExtra(UtilApiConstants.CRYPTO_DATA_EXTRA_ID, cryptoData.id).putExtra(UtilApiConstants.CRYPTO_DATA_EXTRA_VAL, currentconvertVal));
+        startActivity(new Intent(MainActivity.this, CryptoCurrencyDetails.class).putExtra(UtilApiConstants.CRYPTO_DATA_EXTRA_ID, cryptoData.id));
+    }
+
+    public void openSettingsActivity() {
+        startActivity(new Intent(MainActivity.this, ActivitySettings.class));
     }
 
     private void prepareCryptoDataData(List<CryptoData> getCountriesResponse) {
         cryptoDataList = getCountriesResponse;
-        mAdapter.currentconvertVal = currentconvertVal;
+        mAdapter.currentconvertVal = UtilSettings.getInstance().getCurrentconvertVal();
         mAdapter.changeList(getCountriesResponse);
     }
 
@@ -168,7 +168,7 @@ public class MainActivity extends BaseActivity implements CryptoAdapterInteracti
     private void getCryptoDatasFromApi(boolean showProgress) {
         if (showProgress)
             showProgress();
-        cryptoMainPresenter.getCryptoDatas(currentconvertVal, currentconvertLimit, new GetCryptoDatasCallback(MainActivity.this));
+        cryptoMainPresenter.getCryptoDatas(UtilSettings.getInstance().getCurrentconvertVal(), UtilSettings.getInstance().getCurrentconvertLimit(), new GetCryptoDatasCallback(MainActivity.this));
     }
 
     private void initialiseActivity() {

@@ -22,6 +22,8 @@ public interface CryptoMainMVP {
 
         void getCryptoDatas(String convertVal, int limit, Callback<List<CryptoData>> callback);
 
+        void getCryptoDatasIfSettingsChanged(String convertVal, int limit, Callback<List<CryptoData>> callback);
+
         void filter(String text, List<CryptoData> cryptoDataList);
 
         void rowCryptoDataClicked(CryptoData cryptoData);

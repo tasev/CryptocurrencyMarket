@@ -23,8 +23,13 @@ public class CryptoMainPresenter extends BasePresenter<CryptoMainMVP.View> imple
         super(dataManager);
     }
 
+    private String lastConvertValApiCall = "";
+    private int lastLimitApiCall = 0;
+
     @Override
     public void getCryptoDatas(String convertVal, int limit, Callback<List<CryptoData>> callback) {
+        lastConvertValApiCall = convertVal;
+        lastLimitApiCall = limit;
         ((CryptoMainDataManager) mDataManager).getCryptoDatas(convertVal, limit, callback);
     }
 
@@ -36,7 +41,7 @@ public class CryptoMainPresenter extends BasePresenter<CryptoMainMVP.View> imple
         }
         List<CryptoData> temp = new ArrayList();
         for (CryptoData d : cryptoDataList) {
-            if (d != null && (d.symbol.toLowerCase()).contains(text.toLowerCase())) {
+            if (d != null && ((d.name.toLowerCase()).contains(text.toLowerCase()) || (d.symbol.toLowerCase()).contains(text.toLowerCase()))) {
                 temp.add(d);
             }
         }
@@ -46,5 +51,12 @@ public class CryptoMainPresenter extends BasePresenter<CryptoMainMVP.View> imple
     @Override
     public void rowCryptoDataClicked(CryptoData cryptoData) {
         mView.openCryptoDataDetails(cryptoData);
+    }
+
+    @Override
+    public void getCryptoDatasIfSettingsChanged(String convertVal, int limit, Callback<List<CryptoData>> callback) {
+        if (lastConvertValApiCall.equals(convertVal) && lastLimitApiCall == limit)
+            return;
+        getCryptoDatas(convertVal, limit, callback);
     }
 }

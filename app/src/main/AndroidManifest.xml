@@ -21,7 +21,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".details.CryptoCurrencyDetails"
+            android:name=".activities.CryptoCurrencyDetails"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ActivitySettings"
             android:screenOrientation="portrait" />
     </application>
 

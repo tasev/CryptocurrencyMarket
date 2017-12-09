@@ -18,5 +18,7 @@ public interface CryptoCurrencyDetailsMVP {
     interface Presenter {
 
         void getCryptoCurrencyDetails(String cryptoId, String convertVal, Callback<List<CryptoData>> callback);
+
+        void getCryptoDatasIfSettingsChanged(String cryptoId, String convertVal, Callback<List<CryptoData>> callback);
     }
 }
